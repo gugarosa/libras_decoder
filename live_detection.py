@@ -27,6 +27,9 @@ def get_arguments():
         '-device', help='Identifier to the input streaming device', type=int, default=0)
 
     parser.add_argument(
+        '-height', help='Height of the captured frames', type=int, default=270)
+
+    parser.add_argument(
         '-width', help='Width of the captured frames', type=int, default=480)
 
     return parser.parse_args()
@@ -39,6 +42,7 @@ if __name__ == '__main__':
     # Gathering variables from arguments
     model_name = args.model
     device = args.device
+    height = args.height
     width = args.width
 
     # Starts a thread from the `VideoStream` class
@@ -53,12 +57,13 @@ if __name__ == '__main__':
         frame = v.read()
 
         # Resizes the frame
-        frame = imutils.resize(frame, width=width)
+        frame = imutils.resize(frame, height=height, width=width)
 
         # Performing the detection over the frame
         preds = d.detect_frame(model, frame)
 
-        print(preds)
+        #
+        d.draw_boxes(frame, preds['detection_scores'], preds['detection_boxes'], preds['detection_classes'], height, width)
 
         # Shows the frame using `open-cv`
         cv2.imshow('frame', frame)
