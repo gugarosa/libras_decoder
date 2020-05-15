@@ -32,6 +32,9 @@ def get_arguments():
     parser.add_argument(
         '-width', help='Width of the captured frames', type=int, default=480)
 
+    parser.add_argument(
+        '-threshold', help='Threshold to display the object detection', type=float, default=0.5)
+
     return parser.parse_args()
 
 
@@ -44,6 +47,7 @@ if __name__ == '__main__':
     device = args.device
     height = args.height
     width = args.width
+    threshold = args.threshold
 
     # Starts a thread from the `VideoStream` class
     v = VideoStream(device).start_thread()
@@ -62,8 +66,9 @@ if __name__ == '__main__':
         # Performing the detection over the frame
         preds = d.detect_frame(model, frame)
 
-        #
-        d.draw_boxes(frame, preds['detection_scores'], preds['detection_boxes'], preds['detection_classes'], height, width)
+        # Draw bounding boxes according to predictions
+        d.draw_boxes(frame, preds['detection_scores'], preds['detection_boxes'], preds['detection_classes'],
+                     height, width, threshold=threshold)
 
         # Shows the frame using `open-cv`
         cv2.imshow('frame', frame)
