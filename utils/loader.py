@@ -21,7 +21,7 @@ def load_from_zoo(file_name):
     model_name = f'{file_name}.tar.gz'
 
     # Defining the model's directory
-    model_dir = tf.keras.utils.get_file(fname=file_name, origin=f'{BASE_URL}/{model_name}', untar=True)
+    model_dir = tf.keras.utils.get_file(file_name, f'{BASE_URL}/{model_name}', untar=True, cache_subdir='', cache_dir='models')
 
     # Appending the path to `saved_model` folder
     model_dir = f'{pathlib.Path(model_dir)}/saved_model'

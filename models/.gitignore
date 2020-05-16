@@ -1,0 +1,3 @@
+# Ignoring every possible folder and .tar.gz
+*/
+*.tar.gz
