@@ -21,7 +21,10 @@ def get_arguments():
         usage='Streams a video from an input device.')
 
     parser.add_argument(
-        '-model', help='Identifier to the input pre-trained model', type=str, default='ssd_mobilenet_v1_coco_2017_11_17')
+        '-model', help='Identifier to the input pre-trained model', type=str, default='ssd_mobilenet_v1_egohands')
+
+    parser.add_argument(
+        '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files')
 
     parser.add_argument(
         '-device', help='Identifier to the input streaming device', type=int, default=0)
@@ -33,7 +36,7 @@ def get_arguments():
         '-width', help='Width of the captured frames', type=int, default=480)
 
     parser.add_argument(
-        '-threshold', help='Threshold to display the object detection', type=float, default=0.5)
+        '-threshold', help='Threshold to display the object detection', type=float, default=0.25)
 
     return parser.parse_args()
 
@@ -44,6 +47,7 @@ if __name__ == '__main__':
 
     # Gathering variables from arguments
     model_name = args.model
+    model_url = args.url
     device = args.device
     height = args.height
     width = args.width
@@ -52,8 +56,8 @@ if __name__ == '__main__':
     # Starts a thread from the `VideoStream` class
     v = VideoStream(device).start_thread()
 
-    # Loading the model from Tensorflow's Zoo
-    model = l.load_from_zoo(model_name)
+    # Loading the model from web
+    model = l.load_from_web(model_name, model_url)
 
     # While the loop is True
     while True:

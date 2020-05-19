@@ -2,15 +2,13 @@ import pathlib
 
 import tensorflow as tf
 
-# Defines a constant for the base URL to load the model
-BASE_URL = 'http://download.tensorflow.org/models/object_detection'
 
-
-def load_from_zoo(file_name):
-    """Loads an pre-trained model from tensorflow's zoo.
+def load_from_web(file_name, url='http://download.tensorflow.org/models/object_detection'):
+    """Loads an pre-trained model from any website.
 
     Args:
         file_name (str): Name of the model's file.
+        url (str): Base URL to load the model.
 
     Returns:
         The model object itself.
@@ -21,13 +19,13 @@ def load_from_zoo(file_name):
     model_name = f'{file_name}.tar.gz'
 
     # Defining the model's directory
-    model_dir = tf.keras.utils.get_file(file_name, f'{BASE_URL}/{model_name}', untar=True, cache_subdir='', cache_dir='models')
+    model_path = tf.keras.utils.get_file(file_name, f'{url}/{model_name}', untar=True, cache_subdir='', cache_dir='models')
 
     # Appending the path to `saved_model` folder
-    model_dir = f'{pathlib.Path(model_dir)}/saved_model'
+    model_path = f'{pathlib.Path(model_path)}/saved_model'
 
     # Loading the model
-    model = tf.saved_model.load(str(model_dir))
+    model = tf.saved_model.load(str(model_path))
 
     # Defining as a serving model
     model = model.signatures['serving_default']
