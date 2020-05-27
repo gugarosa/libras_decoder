@@ -47,7 +47,7 @@ class VideoStream:
 
         """
 
-        return self.frame
+        return self.ret, self.frame
 
     def capture(self):
         """Captures a new frame from the streamming video.

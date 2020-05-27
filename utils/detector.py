@@ -26,15 +26,18 @@ def detect_frame(model, frame):
     return preds
 
 
-def draw_boxes(frame, scores, boxes, labels, height, width, threshold=0.75, color=(77, 255, 9)):
+def detect_box(frame, scores, boxes, height, width, threshold=0.75):
     """
     """
 
     #
-    scores, boxes, labels = tf.squeeze(scores), tf.squeeze(boxes), tf.squeeze(labels)
+    detected_boxes = []
 
     #
-    for score, box, label in zip(scores, boxes, labels):
+    scores, boxes = tf.squeeze(scores), tf.squeeze(boxes)
+
+    #
+    for score, box in zip(scores, boxes):
         #
         if score > threshold:
             #
@@ -44,10 +47,58 @@ def draw_boxes(frame, scores, boxes, labels, height, width, threshold=0.75, colo
             top, bottom = int(box[0] * height), int(box[2] * height)
 
             #
-            text = f'{label}: {(score.numpy() * 100):.2f}%'
+            detected_boxes.append((left, right, top, bottom, score))
 
-            #
-            cv2.putText(frame, text, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+    return detected_boxes
 
-            #
-            cv2.rectangle(frame, (left, top), (right, bottom), color, 3, 1)
+
+def draw_box(frame, boxes, color=(77, 255, 9)):
+    """
+    """
+
+    #
+    for box in boxes:
+        #
+        left, right, top, bottom, score = box
+
+        #
+        text = f'{(score.numpy() * 100):.2f}%'
+
+        #
+        cv2.putText(frame, text, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+
+        #
+        cv2.rectangle(frame, (left, top), (right, bottom), color, 3, 1)
+
+
+def pad_box(box, height, width, padding=10):
+    """
+    """
+
+    left, right, top, bottom, _ = box
+
+    #
+    left -= padding
+
+    if left < 0:
+        left = 0
+
+    #
+    right += padding
+    
+    if right > width:
+        right = width
+
+    #
+    top -= padding
+
+    if top < 0:
+        top = 0
+
+    #
+    bottom += padding
+
+    if bottom > height:
+        bottom = height
+
+    return left, right, top, bottom

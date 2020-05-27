@@ -62,20 +62,34 @@ if __name__ == '__main__':
     # While the loop is True
     while True:
         # Reads a new frame
-        frame = v.read()
+        valid, frame = v.read()
 
-        # Resizes the frame
-        frame = imutils.resize(frame, height=height, width=width)
+        #
+        if valid:
 
-        # Performing the detection over the frame
-        preds = d.detect_frame(model, frame)
+            # Resizes the frame
+            frame = imutils.resize(frame, height=height, width=width)
 
-        # Draw bounding boxes according to predictions
-        d.draw_boxes(frame, preds['detection_scores'], preds['detection_boxes'], preds['detection_classes'],
-                     height, width, threshold=threshold)
+            # Performing the detection over the frame
+            preds = d.detect_frame(model, frame)
 
-        # Shows the frame using `open-cv`
-        cv2.imshow('frame', frame)
+            # Detects bounding boxes over the objects
+            detected_boxes = d.detect_box(frame, preds['detection_scores'], preds['detection_boxes'],
+                                        height, width, threshold=threshold)
+
+            #
+            if len(detected_boxes) > 0:
+                #
+                left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
+
+                #
+                cv2.imshow(f'hand', frame[top:bottom, left:right, :])
+
+            # Draw bounding boxes according to detected objects
+            d.draw_box(frame, detected_boxes)
+
+            # Shows the frame using `open-cv`
+            cv2.imshow('stream', frame)
 
         # If the `q` key is inputted, breaks the loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
