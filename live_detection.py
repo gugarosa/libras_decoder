@@ -21,7 +21,7 @@ def get_arguments():
         usage='Streams a video from an input device.')
 
     parser.add_argument(
-        '-model', help='Identifier to the input pre-trained model', type=str, default='ssd_mobilenet_v1_egohands')
+        '-model', help='Identifier to the input pre-trained model', type=str, default='ssd_mobilenet_v2_egohands')
 
     parser.add_argument(
         '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files')
