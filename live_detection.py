@@ -92,15 +92,19 @@ if __name__ == '__main__':
                 # Shows the hand itself
                 cv2.imshow(f'hand', roi)
 
-                blur = cv2.GaussianBlur(frame[top:bottom, left:right, :], (3,3), 0)
+                blur = cv2.GaussianBlur(roi, (3,3), 0)
                 hsv = cv2.cvtColor(blur, cv2.COLOR_RGB2HSV)
 
                 lower_color = np.array([108, 23, 82])
                 upper_color = np.array([179, 255, 255])
 
                 mask = cv2.inRange(hsv, lower_color, upper_color)
+                blur = cv2.medianBlur(mask, 5)
 
-                cv2.imshow(f'mask', mask)
+                kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
+                mask2 = cv2.dilate(blur, kernel)
+
+                cv2.imshow(f'mask', mask2)
 
             # Draw bounding boxes according to detected objects
             d.draw_box(frame, detected_boxes)
