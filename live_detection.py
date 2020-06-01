@@ -6,6 +6,7 @@ import imutils
 import utils.detector as d
 import utils.loader as l
 from utils.video_stream import VideoStream
+import numpy as np
 
 
 def get_arguments():
@@ -70,20 +71,36 @@ if __name__ == '__main__':
             # Resizes the frame
             frame = imutils.resize(frame, height=height, width=width)
 
+            # Flips the frame
+            frame = cv2.flip(frame, 1)
+
             # Performing the detection over the frame
             preds = d.detect_frame(model, frame)
 
             # Detects bounding boxes over the objects
             detected_boxes = d.detect_box(frame, preds['detection_scores'], preds['detection_boxes'],
-                                        height, width, threshold=threshold)
+                                          height, width, threshold=threshold)
 
-            #
+            # If the amount os detected boxes is larger than zero
             if len(detected_boxes) > 0:
-                #
+                # Gathers the box positions
                 left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
 
-                #
-                cv2.imshow(f'hand', frame[top:bottom, left:right, :])
+                # Defines the region of interest
+                roi = frame[top:bottom, left:right, :]
+
+                # Shows the hand itself
+                cv2.imshow(f'hand', roi)
+
+                blur = cv2.GaussianBlur(frame[top:bottom, left:right, :], (3,3), 0)
+                hsv = cv2.cvtColor(blur, cv2.COLOR_RGB2HSV)
+
+                lower_color = np.array([108, 23, 82])
+                upper_color = np.array([179, 255, 255])
+
+                mask = cv2.inRange(hsv, lower_color, upper_color)
+
+                cv2.imshow(f'mask', mask)
 
             # Draw bounding boxes according to detected objects
             d.draw_box(frame, detected_boxes)
