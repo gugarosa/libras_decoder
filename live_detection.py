@@ -5,8 +5,8 @@ import imutils
 
 import utils.detector as d
 import utils.loader as l
+import utils.processor as p
 from utils.video_stream import VideoStream
-import numpy as np
 
 
 def get_arguments():
@@ -75,10 +75,10 @@ if __name__ == '__main__':
             frame = cv2.flip(frame, 1)
 
             # Performing the detection over the frame
-            preds = d.detect_frame(model, frame)
+            preds = d.predict_over_frame(model, frame)
 
             # Detects bounding boxes over the objects
-            detected_boxes = d.detect_box(frame, preds['detection_scores'], preds['detection_boxes'],
+            detected_boxes = d.detect_boxes(frame, preds['detection_scores'], preds['detection_boxes'],
                                           height, width, threshold=threshold)
 
             # If the amount os detected boxes is larger than zero
@@ -86,28 +86,20 @@ if __name__ == '__main__':
                 # Gathers the box positions
                 left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
 
-                # Defines the region of interest
+                # Defines the region of interest (ROI)
                 roi = frame[top:bottom, left:right, :]
 
                 # Shows the hand itself
                 cv2.imshow(f'hand', roi)
 
-                blur = cv2.GaussianBlur(roi, (3,3), 0)
-                hsv = cv2.cvtColor(blur, cv2.COLOR_RGB2HSV)
+                # Creates a mask using the ROI
+                mask = p.create_mask(roi)
 
-                lower_color = np.array([108, 23, 82])
-                upper_color = np.array([179, 255, 255])
-
-                mask = cv2.inRange(hsv, lower_color, upper_color)
-                blur = cv2.medianBlur(mask, 5)
-
-                kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
-                mask2 = cv2.dilate(blur, kernel)
-
-                cv2.imshow(f'mask', mask2)
+                # Shows the mask
+                cv2.imshow(f'mask', mask)
 
             # Draw bounding boxes according to detected objects
-            d.draw_box(frame, detected_boxes)
+            d.draw_boxes(frame, detected_boxes)
 
             # Shows the frame using `open-cv`
             cv2.imshow('stream', frame)
