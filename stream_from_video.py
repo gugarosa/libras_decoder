@@ -14,9 +14,7 @@ def get_arguments():
 
     """
 
-    # Creates the ArgumentParser
-    parser = argparse.ArgumentParser(
-        usage='Streams a video from an input device.')
+    parser = argparse.ArgumentParser(usage='Streams a video from an input device.')
 
     parser.add_argument(
         '-device', help='Identifier to the input streaming device', type=int, default=0)

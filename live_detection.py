@@ -3,7 +3,7 @@ import argparse
 import cv2
 import imutils
 
-import utils.detector as d
+import core.detector as d
 import utils.loader as l
 import utils.processor as p
 from utils.video_stream import VideoStream
@@ -17,12 +17,10 @@ def get_arguments():
 
     """
 
-    # Creates the ArgumentParser
-    parser = argparse.ArgumentParser(
-        usage='Streams a video from an input device.')
+    parser = argparse.ArgumentParser(usage='Predicts information from a streamming video.')
 
     parser.add_argument(
-        '-model', help='Identifier to the input pre-trained model', type=str, default='ssd_mobilenet_v2_egohands')
+        '-model', help='Identifier to the input pre-trained model name', type=str, default='ssd_mobilenet_v1_egohands.tar')
 
     parser.add_argument(
         '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files')
@@ -65,9 +63,8 @@ if __name__ == '__main__':
         # Reads a new frame
         valid, frame = v.read()
 
-        #
+        # Checks if the frame is valid
         if valid:
-
             # Resizes the frame
             frame = imutils.resize(frame, height=height, width=width)
 
