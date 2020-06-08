@@ -6,7 +6,7 @@ import imutils
 import core.detector as d
 import utils.loader as l
 import utils.processor as p
-from utils.video_stream import VideoStream
+from core.video_stream import VideoStream
 
 
 def get_arguments():

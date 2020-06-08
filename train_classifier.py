@@ -5,10 +5,9 @@ from tensorflow.keras import losses, optimizers
 from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-from core.architectures.small import SmallCNN
-
 import utils.constants as c
 import utils.loader as l
+from core.architectures.small import SmallCNN
 
 
 def get_arguments():
@@ -89,4 +88,3 @@ if __name__ == '__main__':
 
     # Compress the file into a .tar.gz
     l.tar_file(dataset)
-    
