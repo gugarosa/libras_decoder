@@ -7,6 +7,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from core.architectures.small import SmallCNN
 
+import utils.loader as l
+
 
 def get_arguments():
     """Gets arguments from the command line.
@@ -16,8 +18,7 @@ def get_arguments():
 
     """
 
-    parser = argparse.ArgumentParser(
-        usage='Trains a network with custom data.')
+    parser = argparse.ArgumentParser(usage='Trains a network with custom data.')
 
     parser.add_argument(
         '-dataset', help='Identifier to the dataset', type=str, default='libras')
@@ -38,7 +39,7 @@ def get_arguments():
         '-batch_size', help='Batch size', type=int, default=1)
 
     parser.add_argument(
-        '-epochs', help='Number of training epochs', type=int, default=100)
+        '-epochs', help='Number of training epochs', type=int, default=1)
 
     return parser.parse_args()
 
@@ -61,32 +62,38 @@ if __name__ == '__main__':
     val_gen = ImageDataGenerator(rescale=1./255)
     test_gen = ImageDataGenerator(rescale=1./255)
 
-    #
+    # Creating a train data generator
     train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/train',
-                                       shuffle=True, target_size=(height, width),
-                                       class_mode='binary')
+                                          shuffle=True, target_size=(height, width),
+                                          class_mode='binary')
 
-    #
+    # Creating a validation data generator
     val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/val',
                                       shuffle=True, target_size=(height, width),
                                       class_mode='binary')
 
-    #
+    # Creating a test data generator
     test = test_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/test',
                                         shuffle=True, target_size=(height, width),
                                         class_mode='binary')
 
-    #
+    # Creating the model itself
     model = SmallCNN(height=height, width=width, n_channels=n_channels)
 
-    #
+    # Creating an optimizer
     optimizer = optimizers.Adam(learning_rate=lr)
 
-    #
+    # Attaching optimizer, loss and metrics to the model
     model.compile(optimizer, loss=losses.BinaryCrossentropy(from_logits=True), metrics=['accuracy'])
 
-    #
+    # Fitting the model with training data (validation data for early stopping)
     model.fit_generator(train, steps_per_epoch=batch_size, epochs=epochs, validation_data=val)
 
+    # Evaluates the model on test set
+    model.evaluate(test)
+
+    # Saving model
+    # tf.saved_model.save(model, f'models/{dataset}')
+
     #
-    model.evaluate(val)
+    l.tar_file(f'models/{dataset}')

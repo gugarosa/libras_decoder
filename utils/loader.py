@@ -1,13 +1,38 @@
+import os
 import pathlib
+import tarfile
 
 import tensorflow as tf
 
 
-def load_from_web(file_name, url='http://download.tensorflow.org/models/object_detection'):
+def load_from_disk(model_name):
+    """Loads an pre-trained model from disl.
+
+    Args:
+        model_name (str): Name of the model's.
+
+    Returns:
+        The model object itself.
+
+    """
+
+    # Appending the path to `saved_model` folder
+    model_path = f'models/{model_name}/saved_model'
+
+    # Loading the model
+    model = tf.saved_model.load(str(model_path))
+
+    # Defining as a serving model
+    model = model.signatures['serving_default']
+
+    return model
+
+
+def load_from_web(model_name, url='http://download.tensorflow.org/models/object_detection'):
     """Loads an pre-trained model from any website.
 
     Args:
-        file_name (str): Name of the model's file.
+        model_name (str): Name of the model's.
         url (str): Base URL to load the model.
 
     Returns:
@@ -16,10 +41,10 @@ def load_from_web(file_name, url='http://download.tensorflow.org/models/object_d
     """
 
     # Defining the model's name
-    model_name = f'{file_name}.tar.gz'
+    file_name = f'{model_name}.tar.gz'
 
     # Defining the model's directory
-    model_path = tf.keras.utils.get_file(file_name, f'{url}/{model_name}', untar=True, cache_subdir='', cache_dir='models')
+    model_path = tf.keras.utils.get_file(model_name, f'{url}/{file_name}', untar=True, cache_subdir='', cache_dir='models')
 
     # Appending the path to `saved_model` folder
     model_path = f'{pathlib.Path(model_path)}/saved_model'
@@ -31,3 +56,31 @@ def load_from_web(file_name, url='http://download.tensorflow.org/models/object_d
     model = model.signatures['serving_default']
 
     return model
+
+
+def tar_file(model_name):
+    """Compress a file using .tar.gz compression.
+
+    Args:
+        model_name (str): Name of the model's.
+
+    """
+
+    # Opens a .tar.gz file with `model_name`
+    with tarfile.open(f'{model_name}.tar.gz', "w:gz") as tar:
+        # Adds every file in the folder to the tar file
+        tar.add(model_name, arcname=os.path.basename(model_name))
+
+
+def untar_file(model_name):
+    """De-compress a file with .tar.gz compression.
+
+    Args:
+        model_name (str): Name of the model's.
+
+    """
+
+    # Opens a .tar.gz file with `model_name`
+    with tarfile.open(f'{model_name}.tar.gz', "r:gz") as tar:
+        # Extracts all files
+        tar.extractall()

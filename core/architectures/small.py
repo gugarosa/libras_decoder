@@ -5,16 +5,17 @@ from tensorflow.keras.layers import (Conv2D, Dense, Dropout, Flatten,
 
 
 class SmallCNN(tf.keras.Model):
-    """
+    """A SmallCNN class implements a standard CNN architecture.
+
     """
 
     def __init__(self, height=320, width=240, n_channels=3):
         """Initialization method.
 
         Args:
-            height (int):
-            width (int):
-            n_channels (int):
+            height (int): Height of input image.
+            width (int): Width of input image.
+            n_channels (int): Number of channels from input image.
 
         """
 
@@ -42,29 +43,29 @@ class SmallCNN(tf.keras.Model):
         """Performs a forward pass over the model.
 
         Args:
-            x (tf.Tensor):
+            x (tf.Tensor): Input tensor.
 
         Returns:
-
+            The output of the network.
 
         """
 
-        #
+        # First convolutional + pooling block
         x = self.pool1(self.conv1(x))
 
-        #
+        # Second convolutional + pooling block
         x = self.pool2(self.conv2(x))
 
-        #
+        # Third convolutional + pooling block
         x = self.pool3(self.conv3(x))
 
-        #
+        # Flattens the output
         x = self.flatten(x)
 
-        #
+        # First fully-connected layer
         x = self.fc1(x)
 
-        #
+        # Output layer
         x = self.fc2(x)
 
         return x

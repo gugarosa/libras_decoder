@@ -20,10 +20,10 @@ def get_arguments():
     parser = argparse.ArgumentParser(usage='Predicts information from a streamming video.')
 
     parser.add_argument(
-        '-model', help='Identifier to the input pre-trained model name', type=str, default='ssd_mobilenet_v1_egohands.tar')
+        '-model', help='Identifier to the input pre-trained model name', type=str, default='ssd_mobilenet_v1_egohands')
 
     parser.add_argument(
-        '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files')
+        '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files/hand_detection')
 
     parser.add_argument(
         '-device', help='Identifier to the input streaming device', type=int, default=0)
