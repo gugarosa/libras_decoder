@@ -33,13 +33,16 @@ def get_arguments():
         '-n_channels', help='Number of channels of the images', type=int, default=3)
 
     parser.add_argument(
+        '-n_classes', help='Number of classes', type=int, default=4)
+
+    parser.add_argument(
         '-lr', help='Learning rate', type=float, default=1e-3)
 
     parser.add_argument(
-        '-batch_size', help='Batch size', type=int, default=1)
+        '-batch_size', help='Batch size', type=int, default=2)
 
     parser.add_argument(
-        '-epochs', help='Number of training epochs', type=int, default=1)
+        '-epochs', help='Number of training epochs', type=int, default=20)
 
     return parser.parse_args()
 
@@ -53,6 +56,7 @@ if __name__ == '__main__':
     height = args.height
     width = args.width
     n_channels = args.n_channels
+    n_classes = args.n_classes
     lr = args.lr
     batch_size = args.batch_size
     epochs = args.epochs
@@ -64,21 +68,21 @@ if __name__ == '__main__':
     # Creating a train data generator
     train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/train',
                                           shuffle=True, target_size=(height, width),
-                                          class_mode='binary')
+                                          class_mode='sparse')
 
     # Creating a validation data generator
     val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/val',
                                       shuffle=True, target_size=(height, width),
-                                      class_mode='binary')
+                                      class_mode='sparse')
 
     # Creating the model itself
-    model = SmallCNN(height=height, width=width, n_channels=n_channels)
+    model = SmallCNN(height=height, width=width, n_channels=n_channels, n_classes=n_classes)
 
     # Creating an optimizer
     optimizer = optimizers.Adam(learning_rate=lr)
 
     # Attaching optimizer, loss and metrics to the model
-    model.compile(optimizer, loss=losses.BinaryCrossentropy(from_logits=True), metrics=['accuracy'])
+    model.compile(optimizer, loss=losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
 
     # Fitting the model with training data (validation data for early stopping)
     model.fit_generator(train, steps_per_epoch=batch_size, epochs=epochs, validation_data=val)
@@ -87,4 +91,4 @@ if __name__ == '__main__':
     tf.keras.models.save_model(model, f'{c.MODEL_FOLDER}/{dataset}', save_format='tf')
 
     # Compress the file into a .tar.gz
-    l.tar_file(dataset)
+    # l.tar_file(dataset)

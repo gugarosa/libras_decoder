@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # Creating a test data generator
     test = test_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/test',
                                         shuffle=True, target_size=(height, width),
-                                        class_mode='binary')
+                                        class_mode='sparse')
 
     # Checking if path does not exists
     if not pathlib.Path(model_path).is_dir():

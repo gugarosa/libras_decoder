@@ -9,13 +9,14 @@ class SmallCNN(tf.keras.Model):
 
     """
 
-    def __init__(self, height=320, width=240, n_channels=3):
+    def __init__(self, height=320, width=240, n_channels=3, n_classes=1):
         """Initialization method.
 
         Args:
             height (int): Height of input image.
             width (int): Width of input image.
             n_channels (int): Number of channels from input image.
+            n_classes (int): Number of classes.
 
         """
 
@@ -37,7 +38,7 @@ class SmallCNN(tf.keras.Model):
 
         # Defining the fully-connected layers
         self.fc1 = Dense(512, activation='relu')
-        self.fc2 = Dense(1)
+        self.fc2 = Dense(n_classes)
 
     def call(self, x):
         """Performs a forward pass over the model.
