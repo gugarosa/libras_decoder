@@ -7,6 +7,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from core.architectures.small import SmallCNN
 
+import utils.constants as c
 import utils.loader as l
 
 
@@ -18,10 +19,10 @@ def get_arguments():
 
     """
 
-    parser = argparse.ArgumentParser(usage='Trains a network with custom data.')
+    parser = argparse.ArgumentParser(usage='Trains a network with customized architecture and data.')
 
     parser.add_argument(
-        '-dataset', help='Identifier to the dataset', type=str, default='libras')
+        'dataset', help='Identifier to the dataset', type=str, default='libras')
 
     parser.add_argument(
         '-height', help='Height of the images', type=int, default=320)
@@ -60,22 +61,16 @@ if __name__ == '__main__':
     # Creating training and validation data generators
     train_gen = ImageDataGenerator(rescale=1./255)
     val_gen = ImageDataGenerator(rescale=1./255)
-    test_gen = ImageDataGenerator(rescale=1./255)
 
     # Creating a train data generator
-    train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/train',
+    train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/train',
                                           shuffle=True, target_size=(height, width),
                                           class_mode='binary')
 
     # Creating a validation data generator
-    val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/val',
+    val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/val',
                                       shuffle=True, target_size=(height, width),
                                       class_mode='binary')
-
-    # Creating a test data generator
-    test = test_gen.flow_from_directory(batch_size=batch_size, directory=f'data/{dataset}/test',
-                                        shuffle=True, target_size=(height, width),
-                                        class_mode='binary')
 
     # Creating the model itself
     model = SmallCNN(height=height, width=width, n_channels=n_channels)
@@ -89,11 +84,9 @@ if __name__ == '__main__':
     # Fitting the model with training data (validation data for early stopping)
     model.fit_generator(train, steps_per_epoch=batch_size, epochs=epochs, validation_data=val)
 
-    # Evaluates the model on test set
-    model.evaluate(test)
-
     # Saving model
-    # tf.saved_model.save(model, f'models/{dataset}')
+    tf.keras.models.save_model(model, f'{c.MODEL_FOLDER}/{dataset}', save_format='tf')
 
-    #
-    l.tar_file(f'models/{dataset}')
+    # Compress the file into a .tar.gz
+    l.tar_file(dataset)
+    

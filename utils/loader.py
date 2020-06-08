@@ -4,6 +4,8 @@ import tarfile
 
 import tensorflow as tf
 
+import utils.constants as c
+
 
 def load_from_disk(model_name):
     """Loads an pre-trained model from disl.
@@ -17,10 +19,10 @@ def load_from_disk(model_name):
     """
 
     # Appending the path to `saved_model` folder
-    model_path = f'models/{model_name}/saved_model'
+    model_path = f'{c.MODEL_FOLDER}/{pathlib.Path(model_name)}/saved_model'
 
     # Loading the model
-    model = tf.saved_model.load(str(model_path))
+    model = tf.saved_model.load(model_path)
 
     # Defining as a serving model
     model = model.signatures['serving_default']
@@ -44,13 +46,13 @@ def load_from_web(model_name, url='http://download.tensorflow.org/models/object_
     file_name = f'{model_name}.tar.gz'
 
     # Defining the model's directory
-    model_path = tf.keras.utils.get_file(model_name, f'{url}/{file_name}', untar=True, cache_subdir='', cache_dir='models')
+    model_path = tf.keras.utils.get_file(model_name, f'{url}/{file_name}', untar=True, cache_subdir='', cache_dir=c.MODEL_FOLDER)    
 
     # Appending the path to `saved_model` folder
     model_path = f'{pathlib.Path(model_path)}/saved_model'
 
     # Loading the model
-    model = tf.saved_model.load(str(model_path))
+    model = tf.saved_model.load(model_path)
 
     # Defining as a serving model
     model = model.signatures['serving_default']
@@ -66,10 +68,13 @@ def tar_file(model_name):
 
     """
 
+    # Defines the model's path
+    model_path = f'{c.MODEL_FOLDER}/{model_name}'
+
     # Opens a .tar.gz file with `model_name`
-    with tarfile.open(f'{model_name}.tar.gz', "w:gz") as tar:
+    with tarfile.open(f'{model_path}.tar.gz', "w:gz") as tar:
         # Adds every file in the folder to the tar file
-        tar.add(model_name, arcname=os.path.basename(model_name))
+        tar.add(model_path, arcname=model_name)
 
 
 def untar_file(model_name):
@@ -83,4 +88,4 @@ def untar_file(model_name):
     # Opens a .tar.gz file with `model_name`
     with tarfile.open(f'{model_name}.tar.gz', "r:gz") as tar:
         # Extracts all files
-        tar.extractall()
+        tar.extractall(c.MODEL_FOLDER)
