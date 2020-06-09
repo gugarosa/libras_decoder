@@ -24,13 +24,13 @@ def get_arguments():
         'dataset', help='Identifier to the dataset', type=str, default='libras')
 
     parser.add_argument(
-        '-height', help='Height of the images', type=int, default=320)
+        '-height', help='Height of the images', type=int, default=100)
 
     parser.add_argument(
-        '-width', help='Width of the images', type=int, default=240)
+        '-width', help='Width of the images', type=int, default=100)
 
     parser.add_argument(
-        '-n_channels', help='Number of channels of the images', type=int, default=3)
+        '-n_channels', help='Number of channels of the images', type=int, default=1)
 
     parser.add_argument(
         '-n_classes', help='Number of classes', type=int, default=4)
@@ -67,12 +67,12 @@ if __name__ == '__main__':
 
     # Creating a train data generator
     train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/train',
-                                          shuffle=True, target_size=(height, width),
+                                          color_mode='grayscale', shuffle=True, target_size=(height, width),
                                           class_mode='sparse')
 
     # Creating a validation data generator
     val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/val',
-                                      shuffle=True, target_size=(height, width),
+                                      color_mode='grayscale', shuffle=True, target_size=(height, width),
                                       class_mode='sparse')
 
     # Creating the model itself

@@ -2,6 +2,7 @@ import argparse
 
 import cv2
 import imutils
+import tensorflow as tf
 
 import core.detector as d
 import utils.loader as l
@@ -20,10 +21,13 @@ def get_arguments():
     parser = argparse.ArgumentParser(usage='Predicts information from a streamming video.')
 
     parser.add_argument(
-        '-model', help='Identifier to the input pre-trained model name', type=str, default='ssd_mobilenet_v1_egohands')
+        '-dtc_model', help='Identifier to the input pre-trained detection model name', type=str, default='ssd_mobilenet_v1_egohands')
 
     parser.add_argument(
         '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files/hand_detection')
+
+    parser.add_argument(
+        '-clf_model', help='Identifier to the input pre-trained classification model name', type=str, default='libras')
 
     parser.add_argument(
         '-device', help='Identifier to the input streaming device', type=int, default=0)
@@ -45,8 +49,9 @@ if __name__ == '__main__':
     args = get_arguments()
 
     # Gathering variables from arguments
-    model_name = args.model
-    model_url = args.url
+    dtc_model = args.dtc_model
+    dtc_url = args.url
+    clf_model = args.clf_model
     device = args.device
     height = args.height
     width = args.width
@@ -55,8 +60,11 @@ if __name__ == '__main__':
     # Starts a thread from the `VideoStream` class
     v = VideoStream(device).start_thread()
 
-    # Loading the model from web
-    model = l.load_from_web(model_name, model_url)
+    # Loading the detection model from web
+    dtc_model = l.load_from_web(dtc_model, dtc_url)
+
+    # Loading the classification model
+    clf_model = tf.keras.models.load_model('models/libras')
 
     # While the loop is True
     while True:
@@ -72,7 +80,7 @@ if __name__ == '__main__':
             frame = cv2.flip(frame, 1)
 
             # Performing the detection over the frame
-            preds = d.predict_over_frame(model, frame)
+            preds = d.predict_over_frame(dtc_model, frame)
 
             # Detects bounding boxes over the objects
             detected_boxes = d.detect_boxes(frame, preds['detection_scores'], preds['detection_boxes'],
@@ -90,7 +98,16 @@ if __name__ == '__main__':
                 cv2.imshow(f'hand', roi)
 
                 # Creates a mask using the ROI
-                mask = p.create_mask(roi)
+                mask = p.create_mask(roi, dilate=True)
+
+                clf_mask = cv2.resize(mask, (100, 100))
+
+                clf_mask = tf.expand_dims(clf_mask, -1)
+                clf_mask = tf.expand_dims(clf_mask, 0)
+
+                clf_preds = clf_model(clf_mask/255)
+
+                print(tf.argmax(clf_preds, axis=1))
 
                 # Shows the mask
                 cv2.imshow(f'mask', mask)
