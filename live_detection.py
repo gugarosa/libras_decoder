@@ -62,8 +62,8 @@ if __name__ == '__main__':
     v = Stream(device).start_thread()
 
     # Loading the detection model from web
-    # dtc_model = l.load_from_web(dtc_model, dtc_url)
-    d = Detector.load(f'models/{dtc_model}')
+    d = Detector.download(dtc_model, dtc_url)
+    # d = Detector.load(f'models/{dtc_model}')
 
     # Loading the classification model
     # clf_model = tf.keras.models.load_model('models/libras')

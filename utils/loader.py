@@ -1,6 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+import utils.constants as c
+
 
 def create_generator(data_path, height, width, batch_size=1,
                      color='grayscale', label='sparse', shuffle=True, rescale=True):
@@ -36,3 +38,19 @@ def create_generator(data_path, height, width, batch_size=1,
                                          batch_size=batch_size, color_mode=color, class_mode=label, shuffle=shuffle)
 
     return data
+
+
+def download_model(base_url, file_name):
+    """Downloada a pre-trained model from the internet.
+
+    Args:
+        base_url (str): Base URL of the model to be downloaded.
+        file_name (str): Name of the file to be downloaded.
+
+    """
+
+    # Creates the URL to be downloaded
+    url = f'{base_url}/{file_name}'
+
+    # Downloads the file
+    tf.keras.utils.get_file(file_name, url, cache_subdir='', cache_dir=c.MODEL_FOLDER)
