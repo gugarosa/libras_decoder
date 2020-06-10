@@ -1,7 +1,5 @@
 import tarfile
 
-import utils.constants as c
-
 
 def tar_file(file_name):
     """Compress a file using .tar.gz.

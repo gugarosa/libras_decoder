@@ -4,10 +4,11 @@ import cv2
 import imutils
 import tensorflow as tf
 
-import core.detector as d
-import utils.loader as l
+import core.detector_ as det
+# import utils.loader as l
 import utils.processor as p
 from core.stream import Stream
+from core.detector import Detector
 
 
 def get_arguments():
@@ -61,10 +62,11 @@ if __name__ == '__main__':
     v = Stream(device).start_thread()
 
     # Loading the detection model from web
-    dtc_model = l.load_from_web(dtc_model, dtc_url)
+    # dtc_model = l.load_from_web(dtc_model, dtc_url)
+    d = Detector.load(f'models/{dtc_model}')
 
     # Loading the classification model
-    clf_model = tf.keras.models.load_model('models/libras')
+    # clf_model = tf.keras.models.load_model('models/libras')
 
     # While the loop is True
     while True:
@@ -80,40 +82,40 @@ if __name__ == '__main__':
             frame = cv2.flip(frame, 1)
 
             # Performing the detection over the frame
-            preds = d.predict_over_frame(dtc_model, frame)
+            preds = det.predict_over_frame(d, frame)
 
             # Detects bounding boxes over the objects
-            detected_boxes = d.detect_boxes(frame, preds['detection_scores'], preds['detection_boxes'],
+            detected_boxes = det.detect_boxes(frame, preds['detection_scores'], preds['detection_boxes'],
                                           height, width, threshold=threshold)
 
-            # If the amount os detected boxes is larger than zero
-            if len(detected_boxes) > 0:
-                # Gathers the box positions
-                left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
+            # # If the amount os detected boxes is larger than zero
+            # if len(detected_boxes) > 0:
+            #     # Gathers the box positions
+            #     left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
 
-                # Defines the region of interest (ROI)
-                roi = frame[top:bottom, left:right, :]
+            #     # Defines the region of interest (ROI)
+            #     roi = frame[top:bottom, left:right, :]
 
-                # Shows the hand itself
-                cv2.imshow(f'hand', roi)
+            #     # Shows the hand itself
+            #     cv2.imshow(f'hand', roi)
 
-                # Creates a mask using the ROI
-                mask = p.create_mask(roi, dilate=True)
+            #     # Creates a mask using the ROI
+            #     mask = p.create_mask(roi, dilate=True)
 
-                clf_mask = cv2.resize(mask, (100, 100))
+            #     clf_mask = cv2.resize(mask, (100, 100))
 
-                clf_mask = tf.expand_dims(clf_mask, -1)
-                clf_mask = tf.expand_dims(clf_mask, 0)
+            #     clf_mask = tf.expand_dims(clf_mask, -1)
+            #     clf_mask = tf.expand_dims(clf_mask, 0)
 
-                clf_preds = clf_model(clf_mask/255)
+            #     clf_preds = clf_model(clf_mask/255)
 
-                print(tf.argmax(clf_preds, axis=1))
+            #     print(tf.argmax(clf_preds, axis=1))
 
-                # Shows the mask
-                cv2.imshow(f'mask', mask)
+            #     # Shows the mask
+            #     cv2.imshow(f'mask', mask)
 
             # Draw bounding boxes according to detected objects
-            d.draw_boxes(frame, detected_boxes)
+            det.draw_boxes(frame, detected_boxes)
 
             # Shows the frame using `open-cv`
             cv2.imshow('stream', frame)

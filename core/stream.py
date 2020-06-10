@@ -43,7 +43,7 @@ class Stream:
         """Reads a new frame.
 
         Returns:
-            The frame that has been read.
+            Whether frame is valid and the frame that has been read itself.
 
         """
 
