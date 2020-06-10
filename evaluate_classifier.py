@@ -22,10 +22,10 @@ def get_arguments():
         'input_model', help='Identifier to the pre-trained model, without its absolute path', type=str)
 
     parser.add_argument(
-        '-height', help='Height of the images', type=int, default=100)
+        '-height', help='Height of the images to be evaluated', type=int, default=100)
 
     parser.add_argument(
-        '-width', help='Width of the images', type=int, default=100)
+        '-width', help='Width of the images to be evaluated', type=int, default=100)
 
     parser.add_argument(
         '-batch_size', help='Batch size', type=int, default=1)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     test = l.create_generator(data_path + 'test', height, width, batch_size)
 
     # Instantiates a classifier from pre-trained model
-    clf = Classifier().load(model_path)
+    clf = Classifier.load(model_path)
 
     # Evaluates the model on test set
     clf.evaluate(test)

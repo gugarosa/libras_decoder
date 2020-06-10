@@ -1,13 +1,9 @@
 import argparse
 
-import tensorflow as tf
 from tensorflow.keras import losses, optimizers
-from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import utils.constants as c
 import utils.loader as l
-
 from core.classifier import Classifier
 
 
@@ -34,9 +30,6 @@ def get_arguments():
         '-width', help='Width of the images to be trained', type=int, default=100)
 
     parser.add_argument(
-        '-n_channels', help='Number of channels of the images to be trained', type=int, default=1)
-
-    parser.add_argument(
         '-n_classes', help='Number of classes to be trained', type=int, default=1)
 
     parser.add_argument(
@@ -47,6 +40,9 @@ def get_arguments():
 
     parser.add_argument(
         '-epochs', help='Number of training epochs', type=int, default=10)
+
+    parser.add_argument(
+        '-compress', help='Whether model file should be compressed after training', type=bool, default=False)
 
     return parser.parse_args()
 
@@ -60,11 +56,11 @@ if __name__ == '__main__':
     output_model = args.output_model
     height = args.height
     width = args.width
-    n_channels = args.n_channels
     n_classes = args.n_classes
     lr = args.lr
     batch_size = args.batch_size
     epochs = args.epochs
+    compress = args.compress
 
     # Creating data and model paths
     data_path = f'{c.DATA_FOLDER}/{dataset}/'
@@ -75,7 +71,7 @@ if __name__ == '__main__':
     val = l.create_generator(data_path + 'val', height, width, batch_size)
 
     # Instantiates a classifier
-    clf = Classifier(height, width, n_channels, n_classes)
+    clf = Classifier.new(height, width, n_classes)
 
     # Creating a optimizer and a loss function
     optimizer = optimizers.Adam(learning_rate=lr)
@@ -88,4 +84,4 @@ if __name__ == '__main__':
     clf.fit(train, val, epochs=epochs)
 
     # Saving model
-    clf.save(model_path, compress=True)
+    clf.save(model_path, compress=compress)
