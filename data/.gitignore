@@ -1,2 +1,4 @@
 # Datasets to be ignored
 libras/
+*.zip
+*.tar.gz

@@ -7,7 +7,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import utils.constants as c
 import utils.loader as l
-from core.architectures.small import SmallCNN
+
+from core.classifier import Classifier
 
 
 def get_arguments():
@@ -18,22 +19,22 @@ def get_arguments():
 
     """
 
-    parser = argparse.ArgumentParser(usage='Trains a network with customized architecture and data.')
+    parser = argparse.ArgumentParser(usage='Trains a network with a customized architecture and data.')
 
     parser.add_argument(
-        'dataset', help='Identifier to the dataset', type=str, default='libras')
+        'dataset', help='Identifier to the dataset', type=str)
 
     parser.add_argument(
-        '-height', help='Height of the images', type=int, default=100)
+        '-height', help='Height of the images to be trained', type=int, default=100)
 
     parser.add_argument(
-        '-width', help='Width of the images', type=int, default=100)
+        '-width', help='Width of the images to be trained', type=int, default=100)
 
     parser.add_argument(
-        '-n_channels', help='Number of channels of the images', type=int, default=1)
+        '-n_channels', help='Number of channels of the images to be trained', type=int, default=1)
 
     parser.add_argument(
-        '-n_classes', help='Number of classes', type=int, default=4)
+        '-n_classes', help='Number of classes to be trained', type=int, default=1)
 
     parser.add_argument(
         '-lr', help='Learning rate', type=float, default=1e-3)
@@ -42,7 +43,7 @@ def get_arguments():
         '-batch_size', help='Batch size', type=int, default=2)
 
     parser.add_argument(
-        '-epochs', help='Number of training epochs', type=int, default=20)
+        '-epochs', help='Number of training epochs', type=int, default=10)
 
     return parser.parse_args()
 
@@ -75,20 +76,21 @@ if __name__ == '__main__':
                                       color_mode='grayscale', shuffle=True, target_size=(height, width),
                                       class_mode='sparse')
 
-    # Creating the model itself
-    model = SmallCNN(height=height, width=width, n_channels=n_channels, n_classes=n_classes)
+    # Instantiates a classifier
+    clf = Classifier(height, width, n_channels, n_classes)
 
-    # Creating an optimizer
+    # Creating a optimizer and a loss function
     optimizer = optimizers.Adam(learning_rate=lr)
+    loss = losses.SparseCategoricalCrossentropy(from_logits=True)
 
-    # Attaching optimizer, loss and metrics to the model
-    model.compile(optimizer, loss=losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
+    # Attaching properties to the classifier
+    clf.compile(optimizer, loss)
 
     # Fitting the model with training data (validation data for early stopping)
-    model.fit_generator(train, steps_per_epoch=batch_size, epochs=epochs, validation_data=val)
+    clf.fit(train, val, batch_size, epochs)
 
-    # Saving model
-    tf.keras.models.save_model(model, f'{c.MODEL_FOLDER}/{dataset}', save_format='tf')
+    # # Saving model
+    # tf.keras.models.save_model(model, f'{c.MODEL_FOLDER}/{dataset}', save_format='tf')
 
     # Compress the file into a .tar.gz
     # l.tar_file(dataset)

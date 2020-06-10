@@ -3,8 +3,8 @@ from threading import Thread
 import cv2
 
 
-class VideoStream:
-    """VideoStream class enables an user from loading and streaming its own camera device.
+class Stream:
+    """A Stream class enables an user from loading and streaming its own camera device.
 
     """
 

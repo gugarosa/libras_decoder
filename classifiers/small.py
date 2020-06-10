@@ -9,7 +9,7 @@ class SmallCNN(tf.keras.Model):
 
     """
 
-    def __init__(self, height=320, width=240, n_channels=3, n_classes=1):
+    def __init__(self, height, width, n_channels, n_classes=1):
         """Initialization method.
 
         Args:

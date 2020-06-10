@@ -7,7 +7,7 @@ import tensorflow as tf
 import core.detector as d
 import utils.loader as l
 import utils.processor as p
-from core.video_stream import VideoStream
+from core.stream import Stream
 
 
 def get_arguments():
@@ -57,8 +57,8 @@ if __name__ == '__main__':
     width = args.width
     threshold = args.threshold
 
-    # Starts a thread from the `VideoStream` class
-    v = VideoStream(device).start_thread()
+    # Starts a thread from the `Stream` class
+    v = Stream(device).start_thread()
 
     # Loading the detection model from web
     dtc_model = l.load_from_web(dtc_model, dtc_url)
