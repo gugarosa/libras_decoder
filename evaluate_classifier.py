@@ -1,11 +1,8 @@
 import argparse
-import pathlib
-
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import utils.constants as c
 import utils.loader as l
+from core.classifier import Classifier
 
 
 def get_arguments():
@@ -19,13 +16,16 @@ def get_arguments():
     parser = argparse.ArgumentParser(usage='Evaluates a pre-trained network.')
 
     parser.add_argument(
-        'dataset', help='Identifier to the dataset', type=str, default='libras')
+        'dataset', help='Identifier to the dataset, without its absolute path', type=str)
 
     parser.add_argument(
-        '-height', help='Height of the images', type=int, default=320)
+        'input_model', help='Identifier to the pre-trained model, without its absolute path', type=str)
 
     parser.add_argument(
-        '-width', help='Width of the images', type=int, default=240)
+        '-height', help='Height of the images', type=int, default=100)
+
+    parser.add_argument(
+        '-width', help='Width of the images', type=int, default=100)
 
     parser.add_argument(
         '-batch_size', help='Batch size', type=int, default=1)
@@ -39,28 +39,20 @@ if __name__ == '__main__':
 
     # Gathering variables from arguments
     dataset = args.dataset
+    input_model = args.input_model
     height = args.height
     width = args.width
     batch_size = args.batch_size
 
-    # Creating path to the model itself
-    model_path = f'{c.MODEL_FOLDER}/{dataset}'
+    # Creating data and model paths
+    data_path = f'{c.DATA_FOLDER}/{dataset}/'
+    model_path = f'{c.MODEL_FOLDER}/{input_model}'
 
-    # Creating training and validation data generators
-    test_gen = ImageDataGenerator(rescale=1./255)
+    # Creating testing data generator
+    test = l.create_generator(data_path + 'test', height, width, batch_size)
 
-    # Creating a test data generator
-    test = test_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/test',
-                                        shuffle=True, target_size=(height, width),
-                                        class_mode='sparse')
-
-    # Checking if path does not exists
-    if not pathlib.Path(model_path).is_dir():
-        # Extracts the compressed file
-        l.untar_file(model_path)
-
-    # Loading model
-    model = tf.keras.models.load_model(model_path)
+    # Instantiates a classifier from pre-trained model
+    clf = Classifier().load(model_path)
 
     # Evaluates the model on test set
-    model.evaluate(test)
+    clf.evaluate(test)

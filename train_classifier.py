@@ -22,7 +22,10 @@ def get_arguments():
     parser = argparse.ArgumentParser(usage='Trains a network with a customized architecture and data.')
 
     parser.add_argument(
-        'dataset', help='Identifier to the dataset', type=str)
+        'dataset', help='Identifier to the dataset, without its absolute path', type=str)
+
+    parser.add_argument(
+        'output_model', help='Identifier to the output model, without its absolute path', type=str)
 
     parser.add_argument(
         '-height', help='Height of the images to be trained', type=int, default=100)
@@ -40,7 +43,7 @@ def get_arguments():
         '-lr', help='Learning rate', type=float, default=1e-3)
 
     parser.add_argument(
-        '-batch_size', help='Batch size', type=int, default=2)
+        '-batch_size', help='Batch size', type=int, default=1)
 
     parser.add_argument(
         '-epochs', help='Number of training epochs', type=int, default=10)
@@ -54,6 +57,7 @@ if __name__ == '__main__':
 
     # Gathering variables from arguments
     dataset = args.dataset
+    output_model = args.output_model
     height = args.height
     width = args.width
     n_channels = args.n_channels
@@ -62,19 +66,13 @@ if __name__ == '__main__':
     batch_size = args.batch_size
     epochs = args.epochs
 
+    # Creating data and model paths
+    data_path = f'{c.DATA_FOLDER}/{dataset}/'
+    model_path = f'{c.MODEL_FOLDER}/{output_model}'
+
     # Creating training and validation data generators
-    train_gen = ImageDataGenerator(rescale=1./255)
-    val_gen = ImageDataGenerator(rescale=1./255)
-
-    # Creating a train data generator
-    train = train_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/train',
-                                          color_mode='grayscale', shuffle=True, target_size=(height, width),
-                                          class_mode='sparse')
-
-    # Creating a validation data generator
-    val = val_gen.flow_from_directory(batch_size=batch_size, directory=f'{c.DATA_FOLDER}/{dataset}/val',
-                                      color_mode='grayscale', shuffle=True, target_size=(height, width),
-                                      class_mode='sparse')
+    train = l.create_generator(data_path + 'train', height, width, batch_size)
+    val = l.create_generator(data_path + 'val', height, width, batch_size)
 
     # Instantiates a classifier
     clf = Classifier(height, width, n_channels, n_classes)
@@ -87,10 +85,7 @@ if __name__ == '__main__':
     clf.compile(optimizer, loss)
 
     # Fitting the model with training data (validation data for early stopping)
-    clf.fit(train, val, batch_size, epochs)
+    clf.fit(train, val, epochs=epochs)
 
-    # # Saving model
-    # tf.keras.models.save_model(model, f'{c.MODEL_FOLDER}/{dataset}', save_format='tf')
-
-    # Compress the file into a .tar.gz
-    # l.tar_file(dataset)
+    # Saving model
+    clf.save(model_path, compress=True)
