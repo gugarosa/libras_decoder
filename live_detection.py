@@ -1,14 +1,10 @@
 import argparse
 
 import cv2
-import imutils
-import tensorflow as tf
 
-import core.detector_ as det
-# import utils.loader as l
 import utils.processor as p
-from core.stream import Stream
 from core.detector import Detector
+from core.stream import Stream
 
 
 def get_arguments():
@@ -22,19 +18,16 @@ def get_arguments():
     parser = argparse.ArgumentParser(usage='Predicts information from a streamming video.')
 
     parser.add_argument(
-        '-dtc_model', help='Identifier to the input pre-trained detection model name', type=str, default='ssd_mobilenet_v1_egohands')
+        'detector', help='Identifier to the input pre-trained detection model', type=str)
 
     parser.add_argument(
-        '-url', help='Identifier to the input pre-trained model URL', type=str, default='http://recogna.tech/files/hand_detection')
-
-    parser.add_argument(
-        '-clf_model', help='Identifier to the input pre-trained classification model name', type=str, default='libras')
+        'classifier', help='Identifier to the input pre-trained classification model', type=str)
 
     parser.add_argument(
         '-device', help='Identifier to the input streaming device', type=int, default=0)
 
     parser.add_argument(
-        '-height', help='Height of the captured frames', type=int, default=270)
+        '-height', help='Height of the captured frames', type=int, default=320)
 
     parser.add_argument(
         '-width', help='Width of the captured frames', type=int, default=480)
@@ -50,23 +43,21 @@ if __name__ == '__main__':
     args = get_arguments()
 
     # Gathering variables from arguments
-    dtc_model = args.dtc_model
-    dtc_url = args.url
-    clf_model = args.clf_model
+    detector = args.detector
+    classifier = args.classifier
     device = args.device
     height = args.height
     width = args.width
     threshold = args.threshold
 
     # Starts a thread from the `Stream` class
-    v = Stream(device).start_thread()
+    v = Stream(height, width, device).start_thread()
 
-    # Loading the detection model from web
-    d = Detector.download(dtc_model, dtc_url)
-    # d = Detector.load(f'models/{dtc_model}')
+    # Loading the detection model
+    det = Detector.load(f'models/{detector}')
 
     # Loading the classification model
-    # clf_model = tf.keras.models.load_model('models/libras')
+    # clf = Classifier.load(f'models/{classifier}')
 
     # While the loop is True
     while True:
@@ -75,18 +66,12 @@ if __name__ == '__main__':
 
         # Checks if the frame is valid
         if valid:
-            # Resizes the frame
-            frame = imutils.resize(frame, height=height, width=width)
-
-            # Flips the frame
-            frame = cv2.flip(frame, 1)
-
             # Performing the detection over the frame
-            preds = det.predict_over_frame(d, frame)
+            preds = det(frame)
 
             # Detects bounding boxes over the objects
-            detected_boxes = det.detect_boxes(frame, preds['detection_scores'], preds['detection_boxes'],
-                                          height, width, threshold=threshold)
+            detected_boxes = p.detect_boxes(preds['detection_scores'], preds['detection_boxes'],
+                                            height, width, threshold=threshold)
 
             # # If the amount os detected boxes is larger than zero
             # if len(detected_boxes) > 0:
@@ -115,7 +100,7 @@ if __name__ == '__main__':
             #     cv2.imshow(f'mask', mask)
 
             # Draw bounding boxes according to detected objects
-            det.draw_boxes(frame, detected_boxes)
+            p.draw_boxes(frame, detected_boxes)
 
             # Shows the frame using `open-cv`
             cv2.imshow('stream', frame)

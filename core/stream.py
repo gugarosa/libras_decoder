@@ -1,6 +1,7 @@
 from threading import Thread
 
 import cv2
+import imutils
 
 
 class Stream:
@@ -8,13 +9,18 @@ class Stream:
 
     """
 
-    def __init__(self, device=0):
+    def __init__(self, height, width, device=0):
         """Initialization method.
 
         Args:
+            height (int): Height for the frames from the input device.
+            width (int): Width for the frames from the input device.
             device (int): From which device the webcam should be loaded.
 
         """
+
+        # Creating a tuple to hold the frame size
+        self.size = (height, width)
 
         # Creating a property for the VideoCapture from `device`
         self.video = cv2.VideoCapture(device)
@@ -47,7 +53,13 @@ class Stream:
 
         """
 
-        return self.ret, self.frame
+        # Resizes the frame
+        frame = imutils.resize(self.frame, height=self.size[0], width=self.size[1])
+
+        # Flips the frame
+        frame = cv2.flip(frame, 1)
+
+        return self.ret, frame
 
     def capture(self):
         """Captures a new frame from the streamming video.

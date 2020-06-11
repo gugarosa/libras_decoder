@@ -21,10 +21,19 @@ class Detector:
     def __call__(self, x):
         """Returns a specific output whenever this class is called.
 
+        Args:
+            x (np.array): An numpy array containing the frame.
+
         Returns:
             Returns the prediction over the model itself.
 
         """
+
+        # Converting the frame to a tensor
+        x = tf.convert_to_tensor(x)
+
+        # Expanding the first axis, i.e., `batch size`
+        x = tf.expand_dims(x, axis=0)
 
         return self.model(x)
 
@@ -49,12 +58,12 @@ class Detector:
         appended_path = f'{model_path}/saved_model'
 
         # Instantiates the class
-        clf = cls()
+        det = cls()
 
         # Loads the pre-trained model
-        clf.model = tf.saved_model.load(appended_path)
+        det.model = tf.saved_model.load(appended_path)
 
         # Defining as a serving model
-        clf.model = clf.model.signatures['serving_default']
+        det.model = det.model.signatures['serving_default']
 
-        return clf
+        return det
