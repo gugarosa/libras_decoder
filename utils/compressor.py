@@ -3,6 +3,7 @@ import tarfile
 
 def tar_file(file_name):
     """Compress a file using .tar.gz.
+    
     Args:
         file_name (str): Name of the file to be compressed.
 

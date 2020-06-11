@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import tensorflow as tf
 
 
 def create_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[179, 255, 255], dilate=False):
@@ -59,11 +58,8 @@ def detect_boxes(scores, boxes, height, width, threshold=0.75):
     # Creates a list of detected boxes
     detected_boxes = []
 
-    # Removes the batch dimension from scores and boxes
-    scores, boxes = tf.squeeze(scores), tf.squeeze(boxes)
-
     # Iterates over every possible box
-    for score, box in zip(scores, boxes):
+    for score, box in zip(scores[0], boxes[0]):
         # If score is bigger than threshold
         if score > threshold:
             # Gathers its box `left` and `right` positions

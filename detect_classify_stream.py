@@ -1,8 +1,10 @@
 import argparse
 
 import cv2
+import tensorflow as tf
 
 import utils.processor as p
+from core.classifier import Classifier
 from core.detector import Detector
 from core.stream import Stream
 
@@ -57,7 +59,7 @@ if __name__ == '__main__':
     det = Detector.load(f'models/{detector}')
 
     # Loading the classification model
-    # clf = Classifier.load(f'models/{classifier}')
+    clf = Classifier.load(f'models/{classifier}')
 
     # While the loop is True
     while True:
@@ -73,31 +75,31 @@ if __name__ == '__main__':
             detected_boxes = p.detect_boxes(preds['detection_scores'], preds['detection_boxes'],
                                             height, width, threshold=threshold)
 
-            # # If the amount os detected boxes is larger than zero
-            # if len(detected_boxes) > 0:
-            #     # Gathers the box positions
-            #     left, right, top, bottom = d.pad_box(detected_boxes[0], height, width, padding=25)
+            # If the amount os detected boxes is larger than zero
+            if len(detected_boxes) > 0:
+                # Gathers the box positions
+                left, right, top, bottom = p.pad_box(detected_boxes[0], height, width, padding=50)
 
-            #     # Defines the region of interest (ROI)
-            #     roi = frame[top:bottom, left:right, :]
+                # Defines the region of interest (ROI)
+                roi = frame[top:bottom, left:right, :]
 
-            #     # Shows the hand itself
-            #     cv2.imshow(f'hand', roi)
+                # Shows the hand itself
+                cv2.imshow(f'hand', roi)
 
-            #     # Creates a mask using the ROI
-            #     mask = p.create_mask(roi, dilate=True)
+                # Creates a mask using the ROI
+                mask = p.create_mask(roi, dilate=False)
 
-            #     clf_mask = cv2.resize(mask, (100, 100))
+                clf_mask = cv2.resize(mask, (100, 100))
 
-            #     clf_mask = tf.expand_dims(clf_mask, -1)
-            #     clf_mask = tf.expand_dims(clf_mask, 0)
+                clf_mask = tf.expand_dims(clf_mask, -1)
+                clf_mask = tf.expand_dims(clf_mask, 0)
 
-            #     clf_preds = clf_model(clf_mask/255)
+                clf_preds = clf(clf_mask/255)
 
-            #     print(tf.argmax(clf_preds, axis=1))
+                print(tf.argmax(clf_preds, axis=1))
 
-            #     # Shows the mask
-            #     cv2.imshow(f'mask', mask)
+                # Shows the mask
+                cv2.imshow(f'mask', mask)
 
             # Draw bounding boxes according to detected objects
             p.draw_boxes(frame, detected_boxes)

@@ -30,13 +30,13 @@ def get_arguments():
         '-width', help='Width of the images to be trained', type=int, default=100)
 
     parser.add_argument(
-        '-n_classes', help='Number of classes to be trained', type=int, default=1)
+        '-n_classes', help='Number of classes to be trained', type=int, default=28)
 
     parser.add_argument(
         '-lr', help='Learning rate', type=float, default=1e-3)
 
     parser.add_argument(
-        '-batch_size', help='Batch size', type=int, default=1)
+        '-batch_size', help='Batch size', type=int, default=8)
 
     parser.add_argument(
         '-epochs', help='Number of training epochs', type=int, default=10)
@@ -69,6 +69,8 @@ if __name__ == '__main__':
     # Creating training and validation data generators
     train = l.create_generator(data_path + 'train', height, width, batch_size)
     val = l.create_generator(data_path + 'val', height, width, batch_size)
+
+    print(train.class_indices)
 
     # Instantiates a classifier
     clf = Classifier.new(height, width, n_classes)
