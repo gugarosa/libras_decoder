@@ -93,7 +93,7 @@ if __name__ == '__main__':
                 pred, prob = clf(mask)
 
                 #
-                print(pred, prob)
+                p.draw_label(mask, pred, prob)
 
                 # Shows the mask
                 cv2.imshow(f'mask', mask)

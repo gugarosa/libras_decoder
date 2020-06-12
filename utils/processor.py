@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+import utils.dictionary as d
+
 
 def create_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[179, 255, 255], dilate=False):
     """Creates a mask over the frame using image processing techniques.
@@ -97,6 +99,16 @@ def draw_boxes(frame, boxes, color=(77, 255, 9)):
 
         # Draw a rectangle on the frame, which indicates the box positioning
         cv2.rectangle(frame, (left, top), (right, bottom), color, 3, 1)
+
+def draw_label(mask, label, prob, color=(30, 30, 30)):
+    """
+    """
+
+    # Creates a text variable with the score in percentage
+    text = f'{d.LIBRAS[label.numpy()]}: {(prob.numpy() * 100):.2f}%'
+
+    # Puts the text on the frame
+    cv2.putText(mask, text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
 
 
 def pad_box(box, height, width, padding=10):

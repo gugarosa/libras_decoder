@@ -40,10 +40,10 @@ class Classifier:
         x = tf.nn.softmax(self.model(x / 255))
 
         #
-        label = tf.argmax(x, axis=1)
+        label = tf.squeeze(tf.argmax(x, axis=1), 0)
 
         #
-        prob = tf.gather(x, label, axis=1)
+        prob = tf.squeeze(tf.gather(x, label, axis=1), 0)
 
         return label, prob
 
