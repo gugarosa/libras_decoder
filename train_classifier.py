@@ -24,6 +24,9 @@ def get_arguments():
         'output_model', help='Identifier to the output model, without its absolute path', type=str)
 
     parser.add_argument(
+        'arch', help='Architecture to be used', choices=['small', 'medium'])
+
+    parser.add_argument(
         '-height', help='Height of the images to be trained', type=int, default=100)
 
     parser.add_argument(
@@ -54,6 +57,7 @@ if __name__ == '__main__':
     # Gathering variables from arguments
     dataset = args.dataset
     output_model = args.output_model
+    architecture = args.arch
     height = args.height
     width = args.width
     n_classes = args.n_classes
@@ -71,7 +75,7 @@ if __name__ == '__main__':
     val = l.create_generator(data_path + 'val', height, width, batch_size)
 
     # Instantiates a classifier
-    clf = Classifier.new(height, width, n_classes)
+    clf = Classifier.new(height, width, n_classes, model=architecture)
 
     # Creating a optimizer and a loss function
     optimizer = optimizers.Adam(learning_rate=lr)

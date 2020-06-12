@@ -4,6 +4,7 @@ import tensorflow as tf
 
 import utils.compressor as c
 from classifiers.small import SmallCNN
+from classifiers.medium import MediumCNN
 
 
 class Classifier:
@@ -71,6 +72,11 @@ class Classifier:
         if model == 'small':
             # Instantiates the architecture
             clf.model = SmallCNN(height, width, n_classes)
+
+        # If it is supposed to use the `medium` architecture
+        elif model == 'medium':
+            # Instantiates the architecture
+            clf.model = MediumCNN(height, width, n_classes)
 
         return clf
 

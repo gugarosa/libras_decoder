@@ -4,8 +4,8 @@ from tensorflow.keras.layers import (Conv2D, Dense, Dropout, Flatten,
                                      MaxPooling2D)
 
 
-class SmallCNN(tf.keras.Model):
-    """A SmallCNN class implements a standard CNN architecture.
+class MediumCNN(tf.keras.Model):
+    """A MediumCNN class implements a more complex CNN architecture.
 
     """
 
@@ -21,26 +21,30 @@ class SmallCNN(tf.keras.Model):
         """
 
         # Overriding class with custom properties
-        super(SmallCNN, self).__init__(name='small_cnn')
+        super(MediumCNN, self).__init__(name='medium_cnn')
 
         # Defining convolutional layers
-        self.conv1 = Conv2D(16, 3, padding='same', activation='relu')
-        self.conv2 = Conv2D(32, 3, padding='same', activation='relu')
-        self.conv3 = Conv2D(64, 3, padding='same', activation='relu')
+        self.conv1 = Conv2D(64, 3, padding='same', activation='relu')
+        self.conv2 = Conv2D(128, 3, padding='same', activation='relu')
+        self.conv3 = Conv2D(256, 3, padding='same', activation='relu')
 
         # Defining pooling layers
         self.pool1 = MaxPooling2D()
         self.pool2 = MaxPooling2D()
         self.pool3 = MaxPooling2D()
 
+        # Defining dropout layer
+        self.drop = Dropout(0.5)
+
         # Defining the flattenning layer
         self.flatten = Flatten()
 
         # Defining the fully-connected layers
-        self.fc1 = Dense(256, activation='relu')
-        self.fc2 = Dense(n_classes)
+        self.fc1 = Dense(512, activation='relu')
+        self.fc2 = Dense(256, activation='relu')
+        self.fc3 = Dense(n_classes)
 
-    def call(self, x):
+    def call(self, x, training):
         """Performs a forward pass over the model.
 
         Args:
@@ -64,9 +68,12 @@ class SmallCNN(tf.keras.Model):
         x = self.flatten(x)
 
         # First fully-connected layer
-        x = self.fc1(x)
+        x = self.drop(self.fc1(x))
+
+        # Second fully-connected layer
+        x = self.drop(self.fc2(x))
 
         # Output layer
-        x = self.fc2(x)
+        x = self.fc3(x)
 
         return x
