@@ -27,7 +27,25 @@ class Classifier:
 
         """
 
-        return self.model(x)
+        # Gathering height and width from model
+        height, width = self.model.inputs[0].shape[1], self.model.inputs[0].shape[2]
+
+        #
+        x = tf.expand_dims(tf.expand_dims(x, -1), 0)
+
+        # Resizing the input
+        x = tf.image.resize(x, [height, width])
+
+        #
+        x = tf.nn.softmax(self.model(x / 255))
+
+        #
+        label = tf.argmax(x, axis=1)
+
+        #
+        prob = tf.gather(x, label, axis=1)
+
+        return label, prob
 
     @classmethod
     def new(cls, height, width, n_classes, model='small'):

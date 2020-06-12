@@ -89,14 +89,11 @@ if __name__ == '__main__':
                 # Creates a mask using the ROI
                 mask = p.create_mask(roi, dilate=False)
 
-                clf_mask = cv2.resize(mask, (100, 100))
+                #
+                pred, prob = clf(mask)
 
-                clf_mask = tf.expand_dims(clf_mask, -1)
-                clf_mask = tf.expand_dims(clf_mask, 0)
-
-                clf_preds = clf(clf_mask/255)
-
-                print(tf.argmax(clf_preds, axis=1))
+                #
+                print(pred, prob)
 
                 # Shows the mask
                 cv2.imshow(f'mask', mask)
