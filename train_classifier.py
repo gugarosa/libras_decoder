@@ -70,8 +70,6 @@ if __name__ == '__main__':
     train = l.create_generator(data_path + 'train', height, width, batch_size)
     val = l.create_generator(data_path + 'val', height, width, batch_size)
 
-    print(train.class_indices)
-
     # Instantiates a classifier
     clf = Classifier.new(height, width, n_classes)
 
