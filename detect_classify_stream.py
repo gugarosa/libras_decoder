@@ -1,7 +1,6 @@
 import argparse
 
 import cv2
-import tensorflow as tf
 
 import utils.processor as p
 from core.classifier import Classifier
@@ -69,10 +68,10 @@ if __name__ == '__main__':
         # Checks if the frame is valid
         if valid:
             # Performing the detection over the frame
-            preds = det(frame)
+            det_preds = det(frame)
 
             # Detects bounding boxes over the objects
-            detected_boxes = p.detect_boxes(preds['detection_scores'], preds['detection_boxes'],
+            detected_boxes = p.detect_boxes(det_preds['detection_scores'], det_preds['detection_boxes'],
                                             height, width, threshold=threshold)
 
             # If the amount os detected boxes is larger than zero
@@ -89,11 +88,14 @@ if __name__ == '__main__':
                 # Creates a mask using the ROI
                 mask = p.create_mask(roi, dilate=False)
 
-                #
-                pred, prob = clf(mask)
+                # Performing the classification over the mask
+                clf_label, clf_prob = clf(mask)
 
-                #
-                p.draw_label(mask, pred, prob)
+                # Converting the mask to a BGR (just for inputting the text)
+                mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+
+                # Draws the predicted label and its probability
+                p.draw_label(mask, clf_label, clf_prob)
 
                 # Shows the mask
                 cv2.imshow(f'mask', mask)

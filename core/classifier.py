@@ -22,27 +22,30 @@ class Classifier:
     def __call__(self, x):
         """Returns a specific output whenever this class is called.
 
+        Args:
+            x (np.array): An numpy array containing the mask.
+
         Returns:
-            Returns the prediction over the model itself.
+            Returns the predicted label and its probability over the model itself.
 
         """
 
         # Gathering height and width from model
         height, width = self.model.inputs[0].shape[1], self.model.inputs[0].shape[2]
 
-        #
+        # Adding channel and batch dimensions
         x = tf.expand_dims(tf.expand_dims(x, -1), 0)
 
         # Resizing the input
         x = tf.image.resize(x, [height, width])
 
-        #
+        # Passing down the network and gathering its softmax output
         x = tf.nn.softmax(self.model(x / 255))
 
-        #
+        # Finding the predicted label
         label = tf.squeeze(tf.argmax(x, axis=1), 0)
 
-        #
+        # Also, retrieving its probability
         prob = tf.squeeze(tf.gather(x, label, axis=1), 0)
 
         return label, prob

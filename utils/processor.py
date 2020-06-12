@@ -95,20 +95,28 @@ def draw_boxes(frame, boxes, color=(77, 255, 9)):
         text = f'{(score.numpy() * 100):.2f}%'
 
         # Puts the text on the frame
-        cv2.putText(frame, text, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+        cv2.putText(frame, text, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
         # Draw a rectangle on the frame, which indicates the box positioning
         cv2.rectangle(frame, (left, top), (right, bottom), color, 3, 1)
 
-def draw_label(mask, label, prob, color=(30, 30, 30)):
-    """
+
+def draw_label(mask, label, prob, color=(77, 255, 9)):
+    """Draws the predicted label and its probability in the mask.
+
+    Args:
+        mask (np.array): An array corresponding to the mask to be classified.
+        label (tf.Tensor): A tensor holding the predicted label.
+        prob (tf.Tensor): A tensor holding the predicted probability.
+        color (tuple): Tuple containing the color of the drawing box.
+
     """
 
     # Creates a text variable with the score in percentage
-    text = f'{d.LIBRAS[label.numpy()]}: {(prob.numpy() * 100):.2f}%'
+    text = f'Sinal: {d.LIBRAS[label.numpy()]} ({(prob.numpy() * 100):.2f}%)'
 
     # Puts the text on the frame
-    cv2.putText(mask, text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+    cv2.putText(mask, text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 
 def pad_box(box, height, width, padding=10):
