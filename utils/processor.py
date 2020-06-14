@@ -4,8 +4,8 @@ import numpy as np
 import utils.dictionary as d
 
 
-def create_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[179, 255, 255], dilate=False):
-    """Creates a mask over the frame using image processing techniques.
+def create_binary_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[179, 255, 255], dilate=False):
+    """Creates a binary mask over the frame using image processing techniques.
 
     Args:
         frame (np.array): An array corresponding to the frame to be detected.
@@ -38,6 +38,27 @@ def create_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[179, 25
 
         # Dilates the masked frame
         masked_frame = cv2.dilate(blurred_frame, dilate_kernel)
+
+    return masked_frame
+
+
+def create_gray_mask(frame, kernel=3):
+    """Creates a grayscale mask over the frame using image processing techniques.
+
+    Args:
+        frame (np.array): An array corresponding to the frame to be detected.
+        kernel (int): Size of gaussian blur's kernel.
+
+    Returns:
+        The masked frame.
+
+    """
+
+    # Passes a gaussian blur over the frame
+    blurred_frame = cv2.GaussianBlur(frame, (kernel, kernel), 0)
+
+    # Converts the blurred frame into an Grayscale color format
+    masked_frame = cv2.cvtColor(blurred_frame, cv2.COLOR_RGB2GRAY)
 
     return masked_frame
 
