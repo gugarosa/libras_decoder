@@ -125,7 +125,7 @@ def draw_boxes(frame, boxes, color=(77, 255, 9)):
         cv2.rectangle(frame, (left, top), (right, bottom), color, 3, 1)
 
 
-def draw_label(mask, label, prob, color=(77, 255, 9)):
+def draw_label(mask, label, prob, color=(77, 255, 9), threshold=0.9):
     """Draws the predicted label and its probability in the mask.
 
     Args:
@@ -139,8 +139,15 @@ def draw_label(mask, label, prob, color=(77, 255, 9)):
     # Creates a text variable with the score in percentage
     text = f'Sinal: {d.LIBRAS[label.numpy()]} ({(prob.numpy() * 100):.2f}%)'
 
-    # Puts the text on the frame
-    cv2.putText(mask, text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+    # Checking if probability is bigger than threshold
+    if prob > threshold:
+        # Puts the text on the frame
+        cv2.putText(mask, text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+    # If not
+    else:
+        # Puts an alternative text
+        cv2.putText(mask, 'Calculando ...', (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (77, 9, 255), 2)
 
 
 def pad_box(box, height, width, padding=10):
