@@ -33,11 +33,14 @@ def create_binary_mask(frame, kernel=3, lower_bound=[108, 23, 82], upper_bound=[
         # Passes a median blur over the mask
         blurred_frame = cv2.medianBlur(masked_frame, 5)
 
-        # Creates a dilating kernel
-        dilate_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (8, 8))
+        # Creates a morphological kernel
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel, kernel))
 
         # Dilates the masked frame
-        masked_frame = cv2.dilate(blurred_frame, dilate_kernel)
+        masked_frame = cv2.dilate(blurred_frame, kernel, iterations=3)
+
+        # Erodes the masked frame
+        masked_frame = cv2.erode(masked_frame, kernel, iterations=3)
 
     return masked_frame
 

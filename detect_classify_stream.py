@@ -86,7 +86,8 @@ if __name__ == '__main__':
                 cv2.imshow(f'hand', roi)
 
                 # Creates a mask using the ROI
-                mask = p.create_gray_mask(roi, dilate=False)
+                # mask = p.create_gray_mask(roi)
+                mask = p.create_binary_mask(roi, dilate=True)
 
                 # Performing the classification over the mask
                 clf_label, clf_prob = clf(mask)
