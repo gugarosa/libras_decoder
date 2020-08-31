@@ -4,6 +4,8 @@ Most of gesture alphabet detectors establish a fixed bounding box to capture the
 
 *This repository is a work in progress, and we intend to keep fostering accessibility-based research.*
 
+---
+
 ## Structure
   * `classifiers`
     * `small.py`: A small-sized Convolutional Neural Network, used for easy tasks;
@@ -21,6 +23,8 @@ Most of gesture alphabet detectors establish a fixed bounding box to capture the
     * `loader.py`: Loads classification-based datasets into generators;
     * `processor.py`: Processing utilities, such as detecting bound boxes, drawing labels and creating binary masks.
 
+---
+
 ## Package Guidelines
 
 ### Installation
@@ -32,6 +36,8 @@ Install all the pre-needed requirements using:
 ### Environment configuration
 
 Check the `utils/constants.py` file in order to correct set where data and pre-trained models should be saved and loaded.
+
+---
 
 ## Usage
 
@@ -59,6 +65,8 @@ Finally, it is now possible to stream a video from the webcam and perform real-t
 
 ```python detect_classify_stream.py -h```
 
+---
+
 ## Acknowledgements
 
 We are glad to acknowledge two important sources for conducting our research, as follows:
@@ -67,6 +75,10 @@ We are glad to acknowledge two important sources for conducting our research, as
 
 * LIBRAS Dataset: I. L. O. Bastos, M. F. Angelo and A. C. Loula, Recognition of Static Gestures Applied to Brazilian Sign Language (Libras). 28th SIBGRAPI Conference on Graphics, Patterns and Images, Salvador, 2015, pp. 305-312.
 
+---
+
 ## Support
 
 We know that we do our best, but it is inevitable to acknowledge that we make mistakes. If you ever need to report a bug, report a problem, talk to us, please do so! We will be available at our bests at this repository or gustavo.rosa@unesp.br.
+
+---
