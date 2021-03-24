@@ -43,11 +43,11 @@ Check the `utils/constants.py` file in order to correct set where data and pre-t
 
 ### Download Pre-Trained Hand Detection Models
 
-The first step to recognize the gesture alphabet lies in identifying and tracking hand's movement. To accomplish such a procedure, one needs to pre-train its hand detection model (usually performed with the Egohands dataset) or [download](http://recogna.tech/files/libras_decoder/models) our pre-trained models.
+The first step to recognize the gesture alphabet lies in identifying and tracking hand's movement. To accomplish such a procedure, one needs to pre-train its hand detection model (usually performed with the Egohands dataset).
 
 ### Train and Evaluate Classification Model
 
-After detecting and tracking the hand's movement, it is possible to snapshot the hand and pass it through a classification network, such as a Convolutional Neural Network. To accomplish such a step, one needs to [download](http://recogna.tech/files/libras_decoder/data) the available datasets and pre-train its classification model. We currently offer a modified version of the LIBRAS dataset provided by [LASIC/UEFS](http://sites.ecomp.uefs.br/lasic/projetos/libras-dataset), which holds 28 distinct gestures.
+After detecting and tracking the hand's movement, it is possible to snapshot the hand and pass it through a classification network, such as a Convolutional Neural Network. To accomplish such a step, one needs to download the LIBRAS dataset provided by [LASIC/UEFS](http://sites.ecomp.uefs.br/lasic/projetos/libras-dataset).
 
 With the dataset in hands, one can pre-train its classification model using the following script:
 
