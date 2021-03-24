@@ -41,9 +41,9 @@ Check the `utils/constants.py` file in order to correct set where data and pre-t
 
 ## Usage
 
-### Download Pre-Trained Hand Detection Models
+### Pre-Train Hand Detection Models
 
-The first step to recognize the gesture alphabet lies in identifying and tracking hand's movement. To accomplish such a procedure, one needs to pre-train its hand detection model (usually performed with the Egohands dataset).
+The first step to recognize the gesture alphabet lies in identifying and tracking hand's movement. To accomplish such a procedure, one needs to [pre-train](https://github.com/jkjung-avt/hand-detection-tutorial) its hand detection model (usually performed with the Egohands dataset).
 
 ### Train and Evaluate Classification Model
 
